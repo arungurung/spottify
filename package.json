@@ -1,5 +1,5 @@
 {
-  "name": "chat-app",
+  "name": "spottify",
   "private": true,
   "type": "module",
   "scripts": {
@@ -23,12 +23,11 @@
     "@tanstack/react-start": "^1.132.0",
     "@tanstack/router-plugin": "^1.132.0",
     "lucide-react": "^0.544.0",
-    "mongodb": "^7.0.0",
-    "mongoose": "^8.20.1",
     "nitro": "latest",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "tailwindcss": "^4.0.6",
+    "vite-plugin-svgr": "^4.5.0",
     "vite-tsconfig-paths": "^5.1.4",
     "zod": "^4.1.11"
   },

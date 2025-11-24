@@ -2,12 +2,14 @@ import { useSession } from "@tanstack/react-start/server";
 import { env } from "@/env";
 
 export type SessionUser = {
-	email?: string;
-	id?: string;
-	role?: string;
+	spotifyId?: string;
+	displayName?: string;
+	accessToken?: string;
+	refreshToken?: string;
+	expiresAt?: number;
 };
 
-export function useAppSession() {
+export function getAppSession() {
 	return useSession<SessionUser>({
 		password: env.SESSION_SECRET,
 		name: "app-session",

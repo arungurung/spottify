@@ -4,8 +4,10 @@ import { z } from "zod";
 export const env = createEnv({
 	server: {
 		SERVER_URL: z.string().url().optional(),
-		MONGO_URI: z.string().min(1),
 		SESSION_SECRET: z.string().min(32),
+		SPOTIFY_CLIENT_ID: z.string().min(1),
+		SPOTIFY_CLIENT_SECRET: z.string().min(1),
+		SPOTIFY_REDIRECT_URI: z.url().min(1),
 	},
 
 	/**

@@ -10,9 +10,8 @@ import {
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { Cog } from "lucide-react";
 import DefaultCatchBoundary from "@/components/DefaultCatchBoundary";
-import { AuthProvider } from "@/contexts/auth";
-import { getCurrentUserFn } from "@/utils/getCurrentUser";
 import type { SessionUser } from "@/utils/session";
+import { getCurrentUserFn } from "@/utils/spotify";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 import appCss from "../styles.css?url";
 
@@ -60,9 +59,7 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 function RootComponent() {
 	return (
 		<RootDocument>
-			<AuthProvider>
-				<Outlet />
-			</AuthProvider>
+			<Outlet />
 		</RootDocument>
 	);
 }
@@ -90,7 +87,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 					<div className="ml-auto flex items-center">
 						{user ? (
 							<>
-								<span className="mr-2">{user.email}</span>
+								<span className="mr-2">{user.displayName}</span>
 								<Link to="/user/settings" className="mr-2">
 									<Cog />
 								</Link>
