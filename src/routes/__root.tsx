@@ -8,6 +8,8 @@ import {
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import DefaultCatchBoundary from "@/components/DefaultCatchBoundary";
+import { MotionProvider } from "@/components/motion/MotionProvider";
+import { UIStoreProvider } from "@/components/motion/uiStore";
 import type { SessionUser } from "@/utils/session";
 import { getCurrentUserFn } from "@/utils/spotify-auth";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
@@ -56,7 +58,13 @@ export const Route = createRootRouteWithContext<MyRouterContext>()({
 });
 
 function RootComponent() {
-	return <Outlet />;
+	return (
+		<MotionProvider>
+			<UIStoreProvider>
+				<Outlet />
+			</UIStoreProvider>
+		</MotionProvider>
+	);
 }
 
 function RootDocument({ children }: { children: React.ReactNode }) {
