@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { PlaylistsSection } from "@/components/sections/PlaylistsSection";
 import { RecentlyPlayedSection } from "@/components/sections/RecentlyPlayedSection";
 import { SavedAlbumsSection } from "@/components/sections/SavedAlbumsSection";
 import { TopArtistsSection } from "@/components/sections/TopArtistsSection";
 import { TopTracksSection } from "@/components/sections/TopTracksSection";
+import { DashboardTabs } from "@/components/ui/DashboardTabs";
+import type { SpotifyTimeRange } from "@/types/spotify";
 import {
 	recentlyPlayedQueryOptions,
 	savedAlbumsQueryOptions,
@@ -27,6 +30,14 @@ export const Route = createFileRoute("/_authed/dashboard/")({
 });
 
 function RouteComponent() {
+	const [timeRange, setTimeRange] = useState<SpotifyTimeRange>("medium_term");
+
+	const tabs = [
+		{ id: "short_term", label: "Last 4 Weeks" },
+		{ id: "medium_term", label: "Last 6 Months" },
+		{ id: "long_term", label: "All Time" },
+	];
+
 	return (
 		<div className="min-h-screen bg-gray-50 p-6">
 			<div className="mx-auto max-w-7xl space-y-8">
@@ -35,9 +46,16 @@ function RouteComponent() {
 					<p className="mt-2 text-gray-600">
 						Discover your music taste and explore Spotify
 					</p>
+					<div className="mt-4">
+						<DashboardTabs
+							tabs={tabs}
+							activeId={timeRange}
+							onChange={(id) => setTimeRange(id as SpotifyTimeRange)}
+						/>
+					</div>
 				</div>
-				<TopTracksSection />
-				<TopArtistsSection />
+				<TopTracksSection timeRange={timeRange} />
+				<TopArtistsSection timeRange={timeRange} />
 				<RecentlyPlayedSection />
 				<PlaylistsSection />
 				<SavedAlbumsSection />

@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useUIStore } from "@/components/motion/uiStore";
 import { AlbumCard } from "@/components/spotify/AlbumCard";
 import { savedAlbumsQueryOptions } from "@/utils/spotify-queries";
 import { LoadingGrid } from "./LoadingGrid";
@@ -7,6 +8,7 @@ export function SavedAlbumsSection() {
 	const { data, isLoading, error, refetch } = useQuery(
 		savedAlbumsQueryOptions(),
 	);
+	const { openPanel } = useUIStore();
 
 	if (isLoading) {
 		return (
@@ -60,9 +62,7 @@ export function SavedAlbumsSection() {
 						<AlbumCard
 							key={item.album?.id}
 							album={item.album as import("@/types/spotify").SpotifyAlbum}
-							onClick={(album) =>
-								window.open(album.external_urls.spotify, "_blank")
-							}
+							onClick={(a) => openPanel("album", a.id)}
 						/>
 					))}
 			</div>

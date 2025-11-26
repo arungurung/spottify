@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useUIStore } from "@/components/motion/uiStore";
 import { PlaylistCard } from "@/components/spotify/PlaylistCard";
 import { userPlaylistsQueryOptions } from "@/utils/spotify-queries";
 import { LoadingGrid } from "./LoadingGrid";
@@ -7,6 +8,7 @@ export function PlaylistsSection() {
 	const { data, isLoading, error, refetch } = useQuery(
 		userPlaylistsQueryOptions(),
 	);
+	const { openPanel } = useUIStore();
 
 	if (isLoading) {
 		return (
@@ -59,14 +61,12 @@ export function PlaylistsSection() {
 	return (
 		<section>
 			<h2 className="mb-4 text-2xl font-bold text-gray-800">Your Playlists</h2>
-			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
 				{data.items.map((playlist) => (
 					<PlaylistCard
 						key={playlist.id}
 						playlist={playlist}
-						onClick={(playlist) =>
-							window.open(playlist.external_urls.spotify, "_blank")
-						}
+						onClick={(p) => openPanel("playlist", p.id)}
 					/>
 				))}
 			</div>

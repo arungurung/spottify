@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useUIStore } from "@/components/motion/uiStore";
 import TrackCard from "@/components/spotify/TrackCard";
 import { recentlyPlayedQueryOptions } from "@/utils/spotify-queries";
 import { LoadingGrid } from "./LoadingGrid";
@@ -7,6 +8,7 @@ export function RecentlyPlayedSection() {
 	const { data, isLoading, error, refetch } = useQuery(
 		recentlyPlayedQueryOptions(),
 	);
+	const { openPanel } = useUIStore();
 
 	if (isLoading) {
 		return (
@@ -60,11 +62,9 @@ export function RecentlyPlayedSection() {
 			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
 				{data.items.map((item, index) => (
 					<TrackCard
-						key={`${item.track.id}-${item.played_at}-${index}`}
+						key={`${item.track.id}-${index}`}
 						track={item.track}
-						onClick={(track) =>
-							window.open(track.external_urls.spotify, "_blank")
-						}
+						onClick={(t) => openPanel("track", t.id)}
 					/>
 				))}
 			</div>

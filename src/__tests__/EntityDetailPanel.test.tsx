@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { UIStoreProvider, useUIStore } from "@/components/motion/uiStore";
@@ -14,11 +15,14 @@ function OpenButton() {
 
 describe("EntityDetailPanel", () => {
 	it("opens and closes", () => {
+		const client = new QueryClient();
 		const { getByText, queryByText } = render(
-			<UIStoreProvider>
-				<OpenButton />
-				<EntityDetailPanel />
-			</UIStoreProvider>,
+			<QueryClientProvider client={client}>
+				<UIStoreProvider>
+					<OpenButton />
+					<EntityDetailPanel />
+				</UIStoreProvider>
+			</QueryClientProvider>,
 		);
 		fireEvent.click(getByText("open"));
 		expect(getByText("Details")).toBeTruthy();

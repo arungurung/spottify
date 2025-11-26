@@ -350,3 +350,70 @@ export const getCategoryPlaylists = createServerFn({ method: "GET" })
 			accessToken,
 		);
 	});
+
+// Detail endpoints for entity panel
+export const getTrackByIdFn = createServerFn({ method: "GET" })
+	.middleware([tokenMiddleware])
+	.inputValidator((id: string) => id)
+	.handler(async ({ data, context }) => {
+		const accessToken = context.session.data.accessToken;
+		if (!accessToken) {
+			throw new Error("No access token available");
+		}
+		return spotifyFetch<SpotifyTrack>(`/tracks/${data}`, accessToken);
+	});
+
+export const getArtistByIdFn = createServerFn({ method: "GET" })
+	.middleware([tokenMiddleware])
+	.inputValidator((id: string) => id)
+	.handler(async ({ data, context }) => {
+		const accessToken = context.session.data.accessToken;
+		if (!accessToken) {
+			throw new Error("No access token available");
+		}
+		return spotifyFetch<SpotifyArtist>(`/artists/${data}`, accessToken);
+	});
+
+export const getAlbumByIdFn = createServerFn({ method: "GET" })
+	.middleware([tokenMiddleware])
+	.inputValidator((id: string) => id)
+	.handler(async ({ data, context }) => {
+		const accessToken = context.session.data.accessToken;
+		if (!accessToken) {
+			throw new Error("No access token available");
+		}
+		return spotifyFetch<SpotifyAlbum>(`/albums/${data}`, accessToken);
+	});
+
+export const getPlaylistByIdFn = createServerFn({ method: "GET" })
+	.middleware([tokenMiddleware])
+	.inputValidator((id: string) => id)
+	.handler(async ({ data, context }) => {
+		const accessToken = context.session.data.accessToken;
+		if (!accessToken) {
+			throw new Error("No access token available");
+		}
+		return spotifyFetch<SpotifyPlaylist>(`/playlists/${data}`, accessToken);
+	});
+
+export const getPlaylistTracksFn = createServerFn({ method: "GET" })
+	.middleware([tokenMiddleware])
+	.inputValidator((input: { id: string; limit?: number; offset?: number }) => ({
+		id: input.id,
+		limit: Math.min(input.limit ?? 10, 50),
+		offset: input.offset ?? 0,
+	}))
+	.handler(async ({ data, context }) => {
+		const accessToken = context.session.data.accessToken;
+		if (!accessToken) {
+			throw new Error("No access token available");
+		}
+		const params = new URLSearchParams({
+			limit: String(data.limit),
+			offset: String(data.offset),
+		});
+		return spotifyFetch<SpotifyPaginatedResponse<{ track: SpotifyTrack }>>(
+			`/playlists/${data.id}/tracks?${params}`,
+			accessToken,
+		);
+	});
