@@ -4,13 +4,18 @@ import TrackCard from "@/components/spotify/TrackCard";
 import { TrackListItem } from "@/components/spotify/TrackListItem";
 import { AnimatedCard } from "@/components/ui/AnimatedCard";
 import { SkeletonGrid } from "@/components/ui/LoadingSkeleton";
-import { recentlyPlayedQueryOptions } from "@/utils/spotify-queries";
+import { usePrefetch } from "@/hooks/usePrefetch";
+import {
+	recentlyPlayedQueryOptions,
+	trackDetailQueryOptions,
+} from "@/utils/spotify-queries";
 
 export function RecentlyPlayedSection() {
 	const { data, isLoading, error, refetch } = useQuery(
 		recentlyPlayedQueryOptions(),
 	);
 	const { openPanel } = useUIStore();
+	const { prefetch, cancel } = usePrefetch();
 
 	if (isLoading) {
 		return (
@@ -78,7 +83,12 @@ export function RecentlyPlayedSection() {
 						key={`${item.track.id}-${index}`}
 						index={index}
 						layoutId={`recent-${item.track.id}`}
-						onClick={() => openPanel("track", item.track.id)}
+						onClick={() => {
+							performance.mark(`detail-open-${item.track.id}`);
+							openPanel("track", item.track.id);
+						}}
+						onPrefetch={() => prefetch(trackDetailQueryOptions(item.track.id))}
+						onCancelPrefetch={cancel}
 					>
 						<TrackCard track={item.track} />
 					</AnimatedCard>

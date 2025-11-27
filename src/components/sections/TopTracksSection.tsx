@@ -4,8 +4,12 @@ import TrackCard from "@/components/spotify/TrackCard";
 import { TrackListItem } from "@/components/spotify/TrackListItem";
 import { AnimatedCard } from "@/components/ui/AnimatedCard";
 import { SkeletonGrid } from "@/components/ui/LoadingSkeleton";
+import { usePrefetch } from "@/hooks/usePrefetch";
 import type { SpotifyTimeRange } from "@/types/spotify";
-import { topTracksQueryOptions } from "@/utils/spotify-queries";
+import {
+	topTracksQueryOptions,
+	trackDetailQueryOptions,
+} from "@/utils/spotify-queries";
 
 export function TopTracksSection({
 	timeRange,
@@ -16,6 +20,7 @@ export function TopTracksSection({
 		topTracksQueryOptions(timeRange),
 	);
 	const { openPanel } = useUIStore();
+	const { prefetch, cancel } = usePrefetch();
 
 	if (isLoading) {
 		return (
@@ -83,7 +88,12 @@ export function TopTracksSection({
 						key={track.id}
 						index={index}
 						layoutId={`track-${track.id}`}
-						onClick={() => openPanel("track", track.id)}
+						onClick={() => {
+							performance.mark(`detail-open-${track.id}`);
+							openPanel("track", track.id);
+						}}
+						onPrefetch={() => prefetch(trackDetailQueryOptions(track.id))}
+						onCancelPrefetch={cancel}
 					>
 						<TrackCard track={track} />
 					</AnimatedCard>

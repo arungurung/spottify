@@ -6,6 +6,8 @@ interface AnimatedCardProps {
 	index: number;
 	layoutId?: string;
 	onClick?: () => void;
+	onPrefetch?: () => void;
+	onCancelPrefetch?: () => void;
 }
 
 export function AnimatedCard({
@@ -13,6 +15,8 @@ export function AnimatedCard({
 	index,
 	layoutId,
 	onClick,
+	onPrefetch,
+	onCancelPrefetch,
 }: AnimatedCardProps) {
 	const reduced = useReducedMotion();
 
@@ -36,6 +40,19 @@ export function AnimatedCard({
 						}
 			}
 			onClick={onClick}
+			onMouseEnter={onPrefetch}
+			onMouseLeave={onCancelPrefetch}
+			onFocus={onPrefetch}
+			onBlur={onCancelPrefetch}
+			onKeyDown={(e) => {
+				if (e.key === "Enter" || e.key === " ") {
+					e.preventDefault();
+					onClick?.();
+				}
+			}}
+			role="button"
+			tabIndex={0}
+			aria-haspopup="dialog"
 			className="cursor-pointer"
 		>
 			{children}

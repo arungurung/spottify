@@ -4,13 +4,18 @@ import { AlbumCard } from "@/components/spotify/AlbumCard";
 import { AlbumListItem } from "@/components/spotify/AlbumListItem";
 import { AnimatedCard } from "@/components/ui/AnimatedCard";
 import { SkeletonGrid } from "@/components/ui/LoadingSkeleton";
-import { savedAlbumsQueryOptions } from "@/utils/spotify-queries";
+import { usePrefetch } from "@/hooks/usePrefetch";
+import {
+	albumDetailQueryOptions,
+	savedAlbumsQueryOptions,
+} from "@/utils/spotify-queries";
 
 export function SavedAlbumsSection() {
 	const { data, isLoading, error, refetch } = useQuery(
 		savedAlbumsQueryOptions(),
 	);
 	const { openPanel } = useUIStore();
+	const { prefetch, cancel } = usePrefetch();
 
 	if (isLoading) {
 		return (
@@ -78,7 +83,14 @@ export function SavedAlbumsSection() {
 							key={item.album?.id}
 							index={index}
 							layoutId={`album-${item.album?.id}`}
-							onClick={() => openPanel("album", item.album?.id as string)}
+							onClick={() => {
+								performance.mark(`detail-open-${item.album?.id}`);
+								openPanel("album", item.album?.id as string);
+							}}
+							onPrefetch={() =>
+								prefetch(albumDetailQueryOptions(item.album?.id as string))
+							}
+							onCancelPrefetch={cancel}
 						>
 							<AlbumCard
 								album={item.album as import("@/types/spotify").SpotifyAlbum}

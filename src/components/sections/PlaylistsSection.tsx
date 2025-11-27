@@ -4,13 +4,18 @@ import { PlaylistCard } from "@/components/spotify/PlaylistCard";
 import { PlaylistListItem } from "@/components/spotify/PlaylistListItem";
 import { AnimatedCard } from "@/components/ui/AnimatedCard";
 import { SkeletonGrid } from "@/components/ui/LoadingSkeleton";
-import { userPlaylistsQueryOptions } from "@/utils/spotify-queries";
+import { usePrefetch } from "@/hooks/usePrefetch";
+import {
+	playlistDetailQueryOptions,
+	userPlaylistsQueryOptions,
+} from "@/utils/spotify-queries";
 
 export function PlaylistsSection() {
 	const { data, isLoading, error, refetch } = useQuery(
 		userPlaylistsQueryOptions(),
 	);
 	const { openPanel } = useUIStore();
+	const { prefetch, cancel } = usePrefetch();
 
 	if (isLoading) {
 		return (
@@ -80,7 +85,12 @@ export function PlaylistsSection() {
 						key={playlist.id}
 						index={index}
 						layoutId={`playlist-${playlist.id}`}
-						onClick={() => openPanel("playlist", playlist.id)}
+						onClick={() => {
+							performance.mark(`detail-open-${playlist.id}`);
+							openPanel("playlist", playlist.id);
+						}}
+						onPrefetch={() => prefetch(playlistDetailQueryOptions(playlist.id))}
+						onCancelPrefetch={cancel}
 					>
 						<PlaylistCard playlist={playlist} />
 					</AnimatedCard>

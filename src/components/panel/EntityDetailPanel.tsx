@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect, useId, useRef, useState } from "react";
 import { Motion, useReducedMotion } from "@/components/motion/MotionProvider";
 import { useUIStore } from "@/components/motion/uiStore";
+import { useFocusTrap } from "@/hooks/useFocusTrap";
 import {
 	albumDetailQueryOptions,
 	artistDetailQueryOptions,
@@ -20,14 +21,32 @@ export function EntityDetailPanel() {
 	const reduced = useReducedMotion();
 	const wide = useMediaQuery("(min-width: 1024px)");
 	const initialFocusRef = useRef<HTMLButtonElement>(null);
+	const panelRef = useFocusTrap<HTMLDivElement>(open);
+	const previousFocusRef = useRef<HTMLElement | null>(null);
 	const headingId = useId();
 	const [playlistOffset, setPlaylistOffset] = useState(0);
 
 	useEffect(() => {
 		if (open) {
+			previousFocusRef.current = document.activeElement as HTMLElement;
 			initialFocusRef.current?.focus();
+		} else if (previousFocusRef.current) {
+			previousFocusRef.current.focus();
+			previousFocusRef.current = null;
 		}
 	}, [open]);
+
+	// Handle Escape key
+	useEffect(() => {
+		if (!open) return;
+		const handleEscape = (e: KeyboardEvent) => {
+			if (e.key === "Escape") {
+				closePanel();
+			}
+		};
+		document.addEventListener("keydown", handleEscape);
+		return () => document.removeEventListener("keydown", handleEscape);
+	}, [open, closePanel]);
 
 	// Reset pagination when entity changes
 	useEffect(() => {
@@ -60,6 +79,7 @@ export function EntityDetailPanel() {
 			/>
 			{/* Panel */}
 			<Motion.div
+				ref={panelRef}
 				initial="hidden"
 				animate="show"
 				exit="hidden"
@@ -108,6 +128,22 @@ export function EntityDetailPanel() {
 
 function TrackDetail({ id }: { id: string }) {
 	const { data, isLoading, error } = useQuery(trackDetailQueryOptions(id));
+
+	useEffect(() => {
+		if (data) {
+			performance.mark(`detail-ready-${id}`);
+			try {
+				performance.measure(
+					`detail-latency-${id}`,
+					`detail-open-${id}`,
+					`detail-ready-${id}`,
+				);
+			} catch {
+				// Ignore if start mark doesn't exist
+			}
+		}
+	}, [data, id]);
+
 	if (isLoading) return <div>Loading track…</div>;
 	if (error) return <div className="text-red-600">{String(error)}</div>;
 	if (!data) return null;
@@ -132,6 +168,22 @@ function TrackDetail({ id }: { id: string }) {
 
 function ArtistDetail({ id }: { id: string }) {
 	const { data, isLoading, error } = useQuery(artistDetailQueryOptions(id));
+
+	useEffect(() => {
+		if (data) {
+			performance.mark(`detail-ready-${id}`);
+			try {
+				performance.measure(
+					`detail-latency-${id}`,
+					`detail-open-${id}`,
+					`detail-ready-${id}`,
+				);
+			} catch {
+				// Ignore if start mark doesn't exist
+			}
+		}
+	}, [data, id]);
+
 	if (isLoading) return <div>Loading artist…</div>;
 	if (error) return <div className="text-red-600">{String(error)}</div>;
 	if (!data) return null;
@@ -156,6 +208,22 @@ function ArtistDetail({ id }: { id: string }) {
 
 function AlbumDetail({ id }: { id: string }) {
 	const { data, isLoading, error } = useQuery(albumDetailQueryOptions(id));
+
+	useEffect(() => {
+		if (data) {
+			performance.mark(`detail-ready-${id}`);
+			try {
+				performance.measure(
+					`detail-latency-${id}`,
+					`detail-open-${id}`,
+					`detail-ready-${id}`,
+				);
+			} catch {
+				// Ignore if start mark doesn't exist
+			}
+		}
+	}, [data, id]);
+
 	if (isLoading) return <div>Loading album…</div>;
 	if (error) return <div className="text-red-600">{String(error)}</div>;
 	if (!data) return null;
@@ -195,6 +263,21 @@ function PlaylistDetail({
 	const listRef = useRef<HTMLDivElement>(null);
 
 	const loading = detail.isLoading || tracks.isLoading;
+
+	useEffect(() => {
+		if (detail.data) {
+			performance.mark(`detail-ready-${id}`);
+			try {
+				performance.measure(
+					`detail-latency-${id}`,
+					`detail-open-${id}`,
+					`detail-ready-${id}`,
+				);
+			} catch {
+				// Ignore if start mark doesn't exist
+			}
+		}
+	}, [detail.data, id]);
 
 	useEffect(() => {
 		if (tracks.data?.items) {

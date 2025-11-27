@@ -4,8 +4,12 @@ import ArtistCard from "@/components/spotify/ArtistCard";
 import { ArtistListItem } from "@/components/spotify/ArtistListItem";
 import { AnimatedCard } from "@/components/ui/AnimatedCard";
 import { SkeletonGrid } from "@/components/ui/LoadingSkeleton";
+import { usePrefetch } from "@/hooks/usePrefetch";
 import type { SpotifyTimeRange } from "@/types/spotify";
-import { topArtistsQueryOptions } from "@/utils/spotify-queries";
+import {
+	artistDetailQueryOptions,
+	topArtistsQueryOptions,
+} from "@/utils/spotify-queries";
 
 export function TopArtistsSection({
 	timeRange,
@@ -16,6 +20,7 @@ export function TopArtistsSection({
 		topArtistsQueryOptions(timeRange),
 	);
 	const { openPanel } = useUIStore();
+	const { prefetch, cancel } = usePrefetch();
 
 	if (isLoading) {
 		return (
@@ -87,7 +92,12 @@ export function TopArtistsSection({
 						key={artist.id}
 						index={index}
 						layoutId={`artist-${artist.id}`}
-						onClick={() => openPanel("artist", artist.id)}
+						onClick={() => {
+							performance.mark(`detail-open-${artist.id}`);
+							openPanel("artist", artist.id);
+						}}
+						onPrefetch={() => prefetch(artistDetailQueryOptions(artist.id))}
+						onCancelPrefetch={cancel}
 					>
 						<ArtistCard artist={artist} />
 					</AnimatedCard>

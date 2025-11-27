@@ -13,6 +13,13 @@ export function ArtistListItem({ artist, onClick }: ArtistListItemProps) {
 			type="button"
 			className="group flex w-full items-center gap-3 rounded-lg bg-white p-2 shadow transition-all hover:shadow-md"
 			onClick={() => onClick?.(artist)}
+			onKeyDown={(e) => {
+				if (e.key === "Enter" || e.key === " ") {
+					e.preventDefault();
+					onClick?.(artist);
+				}
+			}}
+			aria-haspopup="dialog"
 		>
 			{artistImage ? (
 				<img

@@ -13,6 +13,13 @@ export function AlbumListItem({ album, onClick }: AlbumListItemProps) {
 		<button
 			type="button"
 			onClick={() => onClick?.(album)}
+			onKeyDown={(e) => {
+				if (e.key === "Enter" || e.key === " ") {
+					e.preventDefault();
+					onClick?.(album);
+				}
+			}}
+			aria-haspopup="dialog"
 			className="group flex w-full items-center gap-3 rounded-lg bg-white p-2 shadow transition-all hover:shadow-md"
 		>
 			{albumImage && (
